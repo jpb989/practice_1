@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import redis
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -90,12 +91,35 @@ WSGI_APPLICATION = "backend.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',  # Use PostgreSQL backend
+        'NAME': 'mydatabase',  # Name of the database (same as defined in docker-compose.yml)
+        'USER': 'user',  # Username (same as defined in docker-compose.yml)
+        'PASSWORD': 'password',  # Password (same as defined in docker-compose.yml)
+        'HOST': 'postgres',  # Service name from docker-compose.yml
+        'PORT': '5432',  # Default PostgreSQL port
     }
 }
+
+REDIS_HOST = 'redis'
+REDIS_PORT = 6379
+REDIS_DB = 0
+
+
+redis_instance = redis.StrictRedis(
+    host=REDIS_HOST, 
+    port=REDIS_PORT, 
+    db=REDIS_DB, 
+    decode_responses=True
+)
 
 
 # Password validation
