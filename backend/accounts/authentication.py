@@ -3,6 +3,7 @@ from django.conf import settings
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from .models import User
+
 class BlacklistTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.headers.get("Authorization")
@@ -10,19 +11,27 @@ class BlacklistTokenAuthentication(BaseAuthentication):
             return None
         
         try:
+            # Extract token from the header
             token = auth_header.split()[1]
-            decoded_data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS265"])
+            
+            # Decode the token
+            decoded_data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+            
         except jwt.ExpiredSignatureError:
             raise AuthenticationFailed("Token has expired.")
         except jwt.InvalidTokenError:
             raise AuthenticationFailed("Invalid token.")
         
+        # Check if the token is blacklisted in Redis
         if settings.redis_instance.exists(token):
             raise AuthenticationFailed("Token is blacklisted.")
 
+        # Extract user information from the decoded data
         user_id = decoded_data.get("user_id")
+        
         try:
-            user = User.get(id=user_id)
+            user = User.objects.get(id=user_id)
         except User.DoesNotExist:
             raise AuthenticationFailed("User not found.")
+        
         return (user, token)

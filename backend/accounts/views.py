@@ -1,7 +1,8 @@
 import jwt
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from .serializers import RegisterSerializer
+from .serializers import RegisterSerializer, LogoutSerializer
+from .api_docs import logout_description, logout_response_200_example, logout_response_400_example
 from rest_framework import serializers
 from rest_framework.permissions import AllowAny
 from rest_framework import status
@@ -32,6 +33,15 @@ class RegisterView(APIView):
 
 class LogoutView(APIView):
     authentication_classes = [BlacklistTokenAuthentication]
+
+    @extend_schema(
+        request=LogoutSerializer,
+        responses={
+            200: logout_response_200_example,
+            400: logout_response_400_example,
+        },
+        description=logout_description
+    )
     def post(self, request):
         token = request.data.get("token")
         if not token:
