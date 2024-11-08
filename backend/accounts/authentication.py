@@ -3,6 +3,7 @@ from django.conf import settings
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from .models import User
+from .redis_client import redis_instance
 
 class BlacklistTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
@@ -23,7 +24,7 @@ class BlacklistTokenAuthentication(BaseAuthentication):
             raise AuthenticationFailed("Invalid token.")
         
         # Check if the token is blacklisted in Redis
-        if settings.redis_instance.exists(token):
+        if redis_instance.exists(token):
             raise AuthenticationFailed("Token is blacklisted.")
 
         # Extract user information from the decoded data

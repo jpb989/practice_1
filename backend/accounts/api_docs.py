@@ -14,14 +14,13 @@ logout_response_200_example = OpenApiResponse(
 logout_response_400_example = OpenApiResponse(
     description="Invalid or expired token.",
     examples={
-        'application/json': {
-            'error': 'Token has already expired.'
-        },
-        'application/json': {
-            'error': 'Token is required.'
-        }
+        'application/json': [
+            {'error': 'Token has already expired.'},
+            {'error': 'Token is required.'}
+        ]
     }
 )
+
 
 logout_description = (
     "This endpoint blacklists the JWT token. "

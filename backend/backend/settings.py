@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-import redis
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -62,6 +61,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
     ],
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        # 'accounts.authentication.BlacklistTokenAuthentication',
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
@@ -109,21 +109,12 @@ DATABASES = {
     }
 }
 
+
 REDIS_HOST = 'redis'
 REDIS_PORT = 6379
 REDIS_DB = 0
 
 
-redis_instance = redis.StrictRedis(
-    host=REDIS_HOST, 
-    port=REDIS_PORT, 
-    db=REDIS_DB, 
-    decode_responses=True
-)
-
-
-# Password validation
-# https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {

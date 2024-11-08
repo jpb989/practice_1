@@ -12,6 +12,10 @@ class RegisterSerializer(serializers.Serializer):
     confirm_password = serializers.CharField(write_only=True, help_text="Confirm the user's password.")
     avatar = serializers.ImageField(required=False, help_text="Optional avatar image.")
 
+    class Meta:
+        ref_name = "UserRegister"  
+
+
     def validate(self, data):
         if data["password"] != data["confirm_password"]:
             raise serializers.ValidationError("Passwords do not match")
@@ -30,9 +34,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def get_token(cls, user):
         token = super().get_token(user)
 
-        # Add custom claims
         token['name'] = user.name
-        # ...
 
         return token
     
