@@ -1,5 +1,5 @@
 from django.urls import path
-# from .views import RegisterView
+from .views import MovieListView
 urlpatterns = [
-    # path("register/", RegisterView.as_view(), name="register"),
+    path("", MovieListView.as_view(), name="movie-list"),
 ]

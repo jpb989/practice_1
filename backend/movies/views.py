@@ -1,9 +1,15 @@
-from rest_framework.views  import APIView
-from rest_framework.response import Response
-from rest_framework.status import HTTP_200_OK
-# Create your views here.
+from rest_framework.pagination import PageNumberPagination
+from .models import Movie
+from .serializers import MovieListSerializer
+from rest_framework.generics import ListAPIView
 
-class MovieListView(APIView):
-    def get(self, request):
-        
-        return Response(data = {"": ""}, status=HTTP_200_OK)
+class MoviePagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+class MovieListView(ListAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieListSerializer
+    pagination_class = MoviePagination
+
