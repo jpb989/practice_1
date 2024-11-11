@@ -8,6 +8,7 @@ from .redis_client import redis_instance
 class BlacklistTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
         auth_header = request.headers.get("Authorization")
+        print(f"header: {auth_header}")
         if not auth_header:
             return None
         

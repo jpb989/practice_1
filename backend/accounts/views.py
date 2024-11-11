@@ -58,21 +58,43 @@ class LogoutView(APIView):
         description=logout_description
     )
     def post(self, request):
-        token = request.data.get("token")
-        if not token:
-            return Response({"error": "Token is required."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            decoded_data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-            expiration_time = decoded_data["exp"] - int(datetime.datetime.now().timestamp())
-
-            redis_instance.setex(token, expiration_time, "blacklisted")
-            return Response({"success": "Token has been blacklisted."}, status=status.HTTP_200_OK)
+        access_token = request.data.get("access")
+        refresh_token = request.data.get("refresh")
         
-        except jwt.ExpiredSignatureError:
-            return Response({"error": "Token has already expired."}, status=status.HTTP_400_BAD_REQUEST)
-        except jwt.InvalidTokenError:
-            return Response({"error": "Invalid token."}, status=status.HTTP_400_BAD_REQUEST)
+        if not access_token and not refresh_token:
+            return Response(
+                {"error": "At least one token (access or refresh) is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        errors = []
+        success = []
+
+        # Helper function to blacklist token
+        def blacklist_token(token_type, token):
+            try:
+                decoded_data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+                expiration_time = decoded_data["exp"] - int(datetime.datetime.now().timestamp())
+                redis_instance.setex(token, expiration_time, "blacklisted")
+                success.append(f"{token_type} has been blacklisted.")
+            except jwt.ExpiredSignatureError:
+                errors.append(f"{token_type} has already expired.")
+            except jwt.InvalidTokenError:
+                errors.append(f"Invalid {token_type}.")
         
+        if refresh_token:
+            blacklist_token("refresh_token", refresh_token)
+        if access_token:
+            blacklist_token("access_token", access_token)
+
+        # If no tokens were successfully blacklisted, return 400
+        if not success:
+            return Response(
+                {"error": "Both tokens are invalid or expired."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Return the appropriate response if there were some successes
+        return Response({"success": success, "errors": errors}, status=status.HTTP_200_OK)
 
 

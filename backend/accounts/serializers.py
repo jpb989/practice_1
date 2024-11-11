@@ -39,5 +39,6 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         return token
     
 class LogoutSerializer(serializers.Serializer):
-    token = serializers.CharField(help_text="JWT token to be blacklisted.")
+    refresh = serializers.CharField(help_text="refresh token to be blacklisted.")
+    access = serializers.CharField(help_text="access token to be blacklisted.")
 

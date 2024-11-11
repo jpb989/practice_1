@@ -1,7 +1,7 @@
 from rest_framework.pagination import PageNumberPagination
 from .models import Movie
 from .serializers import MovieListSerializer, MovieSerializer
-from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView
+from rest_framework.generics import ListAPIView, RetrieveAPIView, CreateAPIView, DestroyAPIView, UpdateAPIView
 from accounts.authentication import BlacklistTokenAuthentication
 from accounts.permission import IsStaffUser
 from drf_spectacular.utils import extend_schema
@@ -28,13 +28,16 @@ class MovieCreateView(CreateAPIView):
     serializer_class = MovieSerializer
     authentication_classes = [BlacklistTokenAuthentication]
     permission_classes = [IsStaffUser]
-    @extend_schema(
-        summary="Create a new movie",
-        description="Allows authenticated users to add a new movie to the database.",
-        security=[{'BearerAuth': []}],
-    )
-    def post(self, request, *args, **kwargs):
-        return super().post(request, *args, **kwargs)
 
 
+class MovieDeleteView(DestroyAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    authentication_classes = [BlacklistTokenAuthentication]
+    permission_classes = [IsStaffUser]
 
+class MovieUpdateView(UpdateAPIView):
+    queryset = Movie.objects.all()
+    serializer_class = MovieSerializer
+    authentication_classes = [BlacklistTokenAuthentication]
+    permission_classes = [IsStaffUser]
