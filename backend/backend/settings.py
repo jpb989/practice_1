@@ -164,9 +164,21 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = "accounts.User"
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Test API',
-    'DESCRIPTION': 'APIs for practice',
+    'TITLE': 'Your API Title',
+    'DESCRIPTION': 'Your API Description',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    # OTHER SETTINGS
+    'SWAGGER_UI_SETTINGS': {
+        'persistAuthorization': True,
+    },
+    'COMPONENTS': {
+        'securitySchemes': {
+            'BearerAuth': {
+                'type': 'http',
+                'scheme': 'bearer',
+                'bearerFormat': 'JWT',
+            },
+        },
+    },
+    'SECURITY': [{'BearerAuth': []}],
 }
