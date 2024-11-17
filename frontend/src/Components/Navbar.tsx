@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
     <nav className="bg-gray-800 p-4 shadow-lg text-white text-2xl">
       <div className="flex items-center w-full">
         <div className='flex space-x-4'>
-          <Link to="/home" className="hover:text-gray-300 transition">Home</Link>
+          <Link to="/" className="hover:text-gray-300 transition">Home</Link>
         </div>
         <div className='ml-auto'>
           <Dropdown 
