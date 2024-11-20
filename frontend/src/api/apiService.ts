@@ -1,8 +1,7 @@
 /// <reference types="vite/client" />
-
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import { getAccessToken } from '../utils/cookies';
-import { useAuth } from '../context/AuthContext';
+import { refreshTokenRequest } from "../utils/auth";
 
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -24,16 +23,14 @@ api.interceptors.request.use(
 api.interceptors.response.use(
     (response) => response,
     async (error) => {
-        const { refreshToken } = useAuth();
         const originalRequest = error.config;
-
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
-            await refreshToken();
+            await refreshTokenRequest();
+            console.log(originalRequest);
             addBearerToken(originalRequest);
             return api(originalRequest);
         }
-
         return Promise.reject(error);
     }
 );
