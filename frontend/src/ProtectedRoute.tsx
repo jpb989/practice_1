@@ -1,15 +1,26 @@
-import React from 'react'
+import React from 'react';
+import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from './context/AuthContext';
-import { Navigate } from 'react-router-dom';
 
 interface ProtectedRouteProps {
-    children: JSX.Element;
+    redirectPath: string;
+    requireAuth: boolean;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ redirectPath, requireAuth }) => {
     const { isAuthenticated } = useAuth();
-    
-    return isAuthenticated ? children : <Navigate to="/login" />;
+
+    if (requireAuth && !isAuthenticated) {
+        // Redirect to login if not authenticated
+        return <Navigate to={redirectPath} replace />;
+    }
+
+    if (!requireAuth && isAuthenticated) {
+        // Redirect to homepage if authenticated
+        return <Navigate to={redirectPath} replace />;
+    }
+
+    return <Outlet />;
 };
 
 export default ProtectedRoute;
