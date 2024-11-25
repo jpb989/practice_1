@@ -36,7 +36,7 @@ const Home = () => {
             className="max-w-xs w-full rounded overflow-hidden shadow-lg transition-transform transform hover:scale-105 bg-white"
           >
             <img
-              className="w-full h-60 object-cover"
+              className="w-full h-60 object-cover object-[center_30%]"
               src={movie.poster}
               alt={movie.title}
             />

@@ -34,6 +34,8 @@ services:
     depends_on:
       - redis
       - postgres  # Ensure PostgreSQL is ready before starting the Django app
+    environment:
+      - MEDIA_DOMAIN=${MEDIA_DOMAIN}
     networks:
       - app-network
 

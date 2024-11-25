@@ -23,6 +23,7 @@ const MovieDetails = () => {
             try {
                 const response = await api.get(`/movies/${id}`);
                 setMovie(response.data);
+                console.log(response.data)
             } catch (error) {
                 console.error(`Error fetching movie details: ${error}`);
             }
