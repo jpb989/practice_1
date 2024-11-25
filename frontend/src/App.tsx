@@ -7,6 +7,7 @@ import Signup from './pages/Signup'
 import ProtectedRoute from './ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import Logout from './pages/Logout'
+import MovieDetails from './pages/MovieDetails'
 
 function App() {
   return (
@@ -15,17 +16,18 @@ function App() {
         <Navbar/>
         <Routes>
           <Route path="/" element={<Home/>} />
+          <Route path="/movies/:id" element={<MovieDetails/>} />
           {/* Redirect to homepage if authenticated */}
-          {/* <Route element={<ProtectedRoute requireAuth={false} redirectPath="/" />}> */}
+          <Route element={<ProtectedRoute requireAuth={false} redirectPath="/" />}>
             <Route path="/login" element={<Login/>} />
             <Route path="/signup" element={<Signup/>} />
-          {/* </Route> */}
+          </Route>
 
           {/* Redirect to login if not authenticated */}
-          {/* <Route element={<ProtectedRoute requireAuth={true} redirectPath="/login" />}> */}
+          <Route element={<ProtectedRoute requireAuth={true} redirectPath="/login" />}>
             <Route path="/profile" element={<Profile/>} />
             <Route path="/logout" element={<Logout/>} />
-          {/* </Route> */}
+          </Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>

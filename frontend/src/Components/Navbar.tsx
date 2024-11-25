@@ -13,7 +13,7 @@ const Navbar: React.FC = () => {
   const { isAuthenticated } = useAuth();
 
   return (
-    <nav className="bg-gray-800 p-4 shadow-lg text-white text-2xl">
+    <nav className="bg-gray-800 py-3 px-6 h-18 border-b border-gray-700 shadow-sm text-white text-lg font-semibold">
       <div className="flex items-center w-full">
         <div className='flex space-x-4'>
           <Link to="/" className="hover:text-gray-300 transition">Home</Link>
@@ -26,10 +26,15 @@ const Navbar: React.FC = () => {
             className='text-xl'
             />
           :
-            <>
-              <button className='bg-white text-black'><Link to="/login">Login</Link></button>
-              <button className='bg-white text-black'><Link to="/signup">Signup</Link></button>
-            </>
+          <div className="grid grid-cols-2 gap-3">
+            <button className="bg-gray-700 text-gray-300 hover:bg-gray-600 hover:text-white px-4 py-2 rounded-lg transition-all duration-200">
+              <Link to="/login">Login</Link>
+            </button>
+            <button className="bg-indigo-500 text-white hover:bg-indigo-400 px-4 py-2 rounded-lg transition-all duration-200">
+              <Link to="/signup">Signup</Link>
+            </button>
+          </div>
+        
           }
         </div>
       </div>

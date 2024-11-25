@@ -16,7 +16,7 @@ const Login = () => {
   const handleSubmit = async (data: React.FormEvent<HTMLFormElement>) => {
     // data.preventDefault();
     try {
-      const response = await api.post("token/", data);
+      const response = await api.post("api/token/", data);
       console.log(response);
       setAccessToken(response.data.access);
       setRefreshToken(response.data.refresh);

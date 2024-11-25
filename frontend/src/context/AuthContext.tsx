@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { refreshTokenRequest } from '../utils/auth';
-import { getAccessToken } from '../utils/cookies';
+import { getAccessToken, getRefreshToken } from '../utils/cookies';
 
 interface AuthContextType {
     isAuthenticated: boolean;
@@ -12,23 +12,20 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(!!getAccessToken());
-    const [loading, setLoading] = useState(true);  // Add a loading state to wait for token check
     const navigate = useNavigate();
 
     useEffect(() => {
         const refreshToken = async () => {
             const success = await refreshTokenRequest();
-            setIsAuthenticated(success);  // Set authentication status
-            setLoading(false);  // Once the check is done, set loading to false
-            if (!success) navigate('/login');  // Redirect if not authenticated
+            setIsAuthenticated(success);
+            const access = getAccessToken();
+            if (!success && access) {
+                navigate('/logout');
+            }
         };
 
         refreshToken();
     }, [navigate]);
-
-    if (loading) {
-        return <div>Loading...</div>;  // Show loading while checking auth status
-    }
 
     return (
         <AuthContext.Provider value={{ isAuthenticated, setIsAuthenticated }}>

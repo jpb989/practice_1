@@ -10,7 +10,7 @@ const Logout = () => {
             const refresh = getRefreshToken();
             const access = getAccessToken();
             try {
-                const response = await api.post("/logout/", {
+                const response = await api.post("api/logout/", {
                     "refresh": refresh,
                     "access": access,
                 });

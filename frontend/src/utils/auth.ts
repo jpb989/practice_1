@@ -6,7 +6,7 @@ export const refreshTokenRequest = async (): Promise<boolean> => {
     if (!token) return false;
 
     try {
-        const response = await api.post('/token/refresh/', { refresh: token });
+        const response = await api.post('api/token/refresh/', { refresh: token });
         setAccessToken(response.data.access);
         return true;
     } catch {
