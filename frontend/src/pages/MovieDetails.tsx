@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import api from "../api/apiService";
 import Modal from "../Components/Modal/Modal";
 import Trailer from "../Components/Modal/Trailer";
@@ -20,6 +20,7 @@ const MovieDetails = () => {
     const [movie, setMovie] = useState<Movie | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [trailerUrl, setTrailerUrl] = useState('');
+    const navigate = useNavigate();
 
     const openTrailerModal = (url: string) => {
         setTrailerUrl(url);
@@ -53,7 +54,7 @@ const MovieDetails = () => {
   return (
         <div className="min-h-screen bg-gray-900 text-white">
         {/* Hero Section */}
-        <div className="relative bg-cover bg-center h-[500px]" style={{ backgroundImage: `url(${movie.poster_landscape})` }}>
+        <div className="relative bg-cover bg-fill h-[500px]" style={{ backgroundImage: `url(${movie.poster_landscape})` }}>
             <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black"></div>
             <div className="absolute inset-0 flex items-end p-8">
             <div>
@@ -76,7 +77,10 @@ const MovieDetails = () => {
         <div className="px-8 py-6">
             <h2 className="text-2xl font-semibold mb-4">Book Tickets</h2>
             <div className="flex gap-4">
-            <button className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-500">
+            <button 
+                className="px-6 py-2 bg-red-600 text-white rounded hover:bg-red-500"
+                onClick={() => navigate(`/show-timings/${id}`)}
+            >
                 Book Now
             </button>
             <button 
