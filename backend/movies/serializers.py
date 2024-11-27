@@ -11,19 +11,29 @@ class MovieListSerializer(serializers.ModelSerializer):
     def get_poster(self, obj):
         base_url = settings.MEDIA_DOMAIN
         print(settings.MEDIA_DOMAIN)
-        if obj.poster:
-            return f"{base_url}{obj.poster.url.lstrip('/')}"
+        if obj.poster_portrait:
+            return f"{base_url}{obj.poster_portrait.url.lstrip('/')}"
         return None
         
 
 class MovieSerializer(serializers.ModelSerializer):
+    poster_portrait = serializers.SerializerMethodField()
+    poster_landscape = serializers.SerializerMethodField()
+
     class Meta:
         model = Movie
         fields = "__all__"
     
-    def get_poster(self, obj):
+    def get_poster_portrait(self, obj):
         base_url = settings.MEDIA_DOMAIN
         print(settings.MEDIA_DOMAIN)
-        if obj.poster:
-            return f"{base_url}{obj.poster.url.lstrip('/')}"
+        if obj.poster_portrait:
+            return f"{base_url}{obj.poster_portrait.url.lstrip('/')}"
+        return None
+    
+    def get_poster_landscape(self, obj):
+        base_url = settings.MEDIA_DOMAIN
+        print(settings.MEDIA_DOMAIN)
+        if obj.poster_landscape:
+            return f"{base_url}{obj.poster_landscape.url.lstrip('/')}"
         return None

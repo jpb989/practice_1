@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import api from '../api/apiService';
+import { useNavigate } from 'react-router-dom';
 
 type movieList = {
+  id: string;
   title: string;
   poster: string;
   release_date: string;
@@ -10,7 +12,7 @@ type movieList = {
 
 const Home = () => {
   const [movies, setMovies] = useState<movieList[]>([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
     const fetchMovies = async () => {
         try {
@@ -20,7 +22,6 @@ const Home = () => {
         } catch (error) {
           console.log(`Error: ${error}`);
         }
-
     };
 
     fetchMovies();
@@ -33,7 +34,8 @@ const Home = () => {
         {movies.map((movie, index) => (
           <div
             key={index}
-            className="max-w-xs w-full rounded overflow-hidden shadow-lg transition-transform transform hover:scale-105 bg-white"
+            className="max-w-xs w-full rounded overflow-hidden shadow-lg transition-transform transform hover:scale-105 bg-white cursor-pointer"
+            onClick={() => navigate(`movies/${movie.id}`)}
           >
             <img
               className="w-full h-60 object-cover object-[center_30%]"
