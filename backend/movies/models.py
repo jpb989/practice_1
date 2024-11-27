@@ -8,7 +8,9 @@ class Movie(models.Model):
     duration = models.PositiveIntegerField(help_text="Duration in minutes")
     language = models.CharField(max_length=50)
     release_date = models.DateField()
-    poster = models.ImageField(upload_to="movie_posters/")
+    poster_portrait = models.ImageField(upload_to="movie_posters/poster_portrait/", null=True, blank=True)
+    poster_landscape = models.ImageField(upload_to="movie_posters/poster_landscape/", null=True, blank=True)
+    trailer = models.URLField(null=True, blank=True)
     rating = models.DecimalField(
         max_digits=3, 
         decimal_places=1, 
