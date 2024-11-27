@@ -8,6 +8,7 @@ import ProtectedRoute from './ProtectedRoute'
 import { AuthProvider } from './context/AuthContext'
 import Logout from './pages/Logout'
 import MovieDetails from './pages/MovieDetails'
+import ShowTimings from './pages/ShowTimings'
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>} />
           <Route path="/movies/:id" element={<MovieDetails/>} />
+          <Route path="/show-timings/:id" element={<ShowTimings/>} />
           {/* Redirect to homepage if authenticated */}
           <Route element={<ProtectedRoute requireAuth={false} redirectPath="/" />}>
             <Route path="/login" element={<Login/>} />
