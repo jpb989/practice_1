@@ -1,5 +1,6 @@
 from django.db import models
-
+from movies.models import Movie
+from .validators import validate_showtime_overlap
 # Create your models here.
 
 class Theatre(models.Model):
@@ -30,3 +31,22 @@ class Seat(models.Model):
 
     def __str__(self):
         return f"Seat {self.row}{self.number} in {self.screen}"
+
+class ShowTime(models.Model):
+    screen = models.ForeignKey(Screen, on_delete=models.CASCADE, related_name="showtimes")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, related_name="showtimes")
+    date = models.DateField()
+    time = models.TimeField()
+
+    class Meta:
+        unique_together = ("screen", "movie", "date", "time")
+    
+    def clean(self):
+        validate_showtime_overlap(self)
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.movie.title} - {self.screen.theatre.name} {self.screen} at {self.time} on {self.date}"
