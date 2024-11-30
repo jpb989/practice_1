@@ -6,11 +6,21 @@ class TheatreSerializer(serializers.ModelSerializer):
         model = Theatre
         fields = "__all__"
 
-class ShowTimeSerializer(serializers.ModelSerializer):
-    theatre = serializers.CharField(source="screen.theatre.name")
-    screen = serializers.CharField(source="screen.screen_number")
-    movie_title = serializers.CharField(source="movie.title")
-    
+
+class SeatSerializer(serializers.ModelSerializer):
+    seat_identifier = serializers.SerializerMethodField()
+
     class Meta:
-        model = ShowTime
-        fields = ["id", "theatre", "screen", "movie_title", "time", "date"]
+        model = Seat
+        fields = ['id', 'seat_identifier', 'is_available']
+
+    def get_seat_identifier(self, obj):
+        return f"{obj.row_name}{obj.column_number}"
+
+
+class ScreenSerializer(serializers.ModelSerializer):
+    seats = SeatSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Screen
+        fields = ['id', 'name', 'seating_grid', 'seats']
