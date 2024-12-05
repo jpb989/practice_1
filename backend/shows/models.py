@@ -23,10 +23,13 @@ class ShowTime(models.Model):
                 name="check_start_time_before_end_time"
             ),
             models.CheckConstraint(
-                check=(models.F('end_time') - models.F('start_time'))__gte=models.F('movie__duration'),
+                check=models.Q(end_time__gte=models.ExpressionWrapper(
+                    models.F('start_time') + models.F('movie__duration'), output_field=models.TimeField()
+                )),
                 name="check_showtime_duration_gte_movie_duration"
             ),
         ]
+
     
     def clean(self):
         validate_showtime_overlap(self)
