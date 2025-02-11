@@ -1,22 +1,20 @@
 from django.core.exceptions import ValidationError
-from datetime import timedelta, datetime
+from .models import Show
 
-def validate_showtime_overlap(showtime):
-    from ..theatres.models import Screen
-    overlapping_shows = Screen.objects.filter(
-        screen=showtime.screen,
-        date=showtime.date
-    ).exclude(id=showtime.id)
 
-    for existing_show in overlapping_shows:
-        existing_start = existing_show.time
-        existing_end = (datetime.combine(existing_show.date, existing_show.time) + 
-                        timedelta(minutes=existing_show.movie.duration)).time()
-        new_start = showtime.start
-        new_end = (datetime.combine(showtime.date, showtime.time) + 
-                   timedelta(minutes=showtime.movie.duration)).time()
-        
-        if(new_start < existing_end and new_end > existing_start):
-            raise ValidationError(
-                f"Showtime overlaps with an existing show: {existing_show.movie.title} at {existing_show.time}"
-            )
+def validate_showtime_overlap(show):
+    overlapping_shows = Show.objects.filter(
+        screen=show.screen,             # Same screen
+        start_time__lt=show.end_time,   # Existing show starts before the new show ends
+        end_time__gt=show.start_time,   # Existing show ends after the new show starts
+    ).exclude(id=show.id)               # Exclude the current show if updating
+
+    # If overlapping shows exist, raise a validation error
+    if overlapping_shows.exists():
+        conflicts = "\n".join(
+            f"{s.movie.title} ({s.start_time.strftime('%Y-%m-%d %H:%M')} - {s.end_time.strftime('%Y-%m-%d %H:%M')})"
+            for s in overlapping_shows
+        )
+        raise ValidationError(
+            f"This show overlaps with existing shows:\n{conflicts}"
+        )
