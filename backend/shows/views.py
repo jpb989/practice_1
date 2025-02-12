@@ -2,20 +2,33 @@ from rest_framework.views import APIView
 from django.utils.dateparse import parse_date
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
+from accounts.authentication import BlacklistTokenAuthentication
+from .models import Show, Booking
+from .serializers import ShowSerializer, BookingSerializer
 
-from .models import Show
-from .serializers import ShowTimeSerializer
 
+class ShowView(viewsets.ReadOnlyModelViewSet):
+    queryset = Show.objects.all()
+    serializer_class = ShowSerializer
+    permission_classes = [AllowAny]
 
-class ShowTimingView(APIView):
-    def get(self, request, date):
-        try:
-            show_date  = parse_date(date)
-            if not show_date:
-                raise ValueError
-        except ValueError:
-            return Response({"error": "Invalid date format. Use YYYY-MM-DD."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        showtimes = Show.objects.filter(date=show_date).select_related("movie", "screen__theatre")
-        serializer = ShowTimeSerializer(showtimes, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+class BookingView(viewsets.ModelViewSet):
+    serializer_class = BookingSerializer
+    authentication_classes = [BlacklistTokenAuthentication]
+    permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        return Booking.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+    
+    def destroy(self, request, *args, **kwargs):
+        booking = self.get_object()
+        if booking.user != request.user:
+            return Response({"error": "You can only cancel your own bookings."}, status=status.HTTP_403_FORBIDDEN)
+        booking.delete()
+        return Response({"message": "Booking cancelled successfully."}, status=status.HTTP_204_NO_CONTENT)
+

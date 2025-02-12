@@ -1,8 +1,7 @@
 from django.core.exceptions import ValidationError
-from .models import Show
-
 
 def validate_showtime_overlap(show):
+    from .models import Show
     overlapping_shows = Show.objects.filter(
         screen=show.screen,             # Same screen
         start_time__lt=show.end_time,   # Existing show starts before the new show ends
