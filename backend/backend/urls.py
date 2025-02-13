@@ -26,6 +26,7 @@ urlpatterns = [
 
     # Shows & Bookings APIs
     path('api/', include("shows.urls")),
+    path('api/', include("theatres.urls")),
 
     # Movies APIs
     path('api/movies/', include("movies.urls")),

@@ -32,19 +32,19 @@ class BookingSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-    show = validated_data["show"]
-    seats = validated_data.pop("seats")
+        show = validated_data["show"]
+        seats = validated_data.pop("seats")
 
-    with transaction.atomic():
-        # Lock selected seats to prevent race conditions
-        locked_seats = Seat.objects.select_for_update().filter(id__in=[seat.id for seat in seats])
+        with transaction.atomic():
+            # Lock selected seats to prevent race conditions
+            locked_seats = Seat.objects.select_for_update().filter(id__in=[seat.id for seat in seats])
 
-        # Ensure no locked seat is already booked for the given show
-        already_booked = Booking.objects.filter(show=show, seats__in=locked_seats).exists()
-        if already_booked:
-            raise serializers.ValidationError("One or more selected seats are already booked for this show.")
+            # Ensure no locked seat is already booked for the given show
+            already_booked = Booking.objects.filter(show=show, seats__in=locked_seats).exists()
+            if already_booked:
+                raise serializers.ValidationError("One or more selected seats are already booked for this show.")
 
-        # Create booking safely
-        booking = Booking.objects.create(**validated_data)
-        booking.seats.set(seats)
-        return booking
+            # Create booking safely
+            booking = Booking.objects.create(**validated_data)
+            booking.seats.set(seats)
+            return booking
