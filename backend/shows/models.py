@@ -43,10 +43,23 @@ class Booking(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="bookings")
     booking_time = models.DateTimeField(auto_now_add=True)
     
-    class Meta:
-        constraints = [
-            models.UniqueConstraint(fields=['show', 'seats'], name='unique_seat_booking')
-        ]
+    def clean(self):
+        if self.pk:
+            existing_booking = Booking.objects.filter(show=self.show).exclude(pk=self.pk)
+        else:
+            existing_booking = Booking.objects.filter(show=self.show)
+        
+        booked_seats = Seat.objects.filter(bookings__in=existing_booking)
+        seats_to_book = self.seats.all()
+        conflicting_seats = booked_seats.filter(pk__in=seats_to_book.values_list('pk', flat=True))
+        if conflicting_seats.exists():
+            seat_labels = ", ".join(str(seat.seat_label) for seat in conflicting_seats)
+            raise ValidationError(f"Seats {seat_labels} are already booked for this show.")
+        
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.clean()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         seat_numbers = ", ".join(str(seat.seat_label) for seat in self.seats.all())

@@ -1,6 +1,8 @@
 from django.conf import settings
 from rest_framework import serializers
 from .models import Movie
+from drf_spectacular.utils import extend_schema_field
+
 class MovieListSerializer(serializers.ModelSerializer):
     poster = serializers.SerializerMethodField()
 
@@ -23,7 +25,8 @@ class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
         fields = "__all__"
-    
+
+    @extend_schema_field(str)
     def get_poster_portrait(self, obj):
         base_url = settings.MEDIA_DOMAIN
         print(settings.MEDIA_DOMAIN)
@@ -31,6 +34,7 @@ class MovieSerializer(serializers.ModelSerializer):
             return f"{base_url}{obj.poster_portrait.url.lstrip('/')}"
         return None
     
+    @extend_schema_field(str)
     def get_poster_landscape(self, obj):
         base_url = settings.MEDIA_DOMAIN
         print(settings.MEDIA_DOMAIN)

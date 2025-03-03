@@ -4,6 +4,7 @@ from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from .models import User
 from .redis_client import redis_instance
+from drf_spectacular.extensions import OpenApiAuthenticationExtension
 
 class BlacklistTokenAuthentication(BaseAuthentication):
     def authenticate(self, request):
@@ -37,3 +38,14 @@ class BlacklistTokenAuthentication(BaseAuthentication):
             raise AuthenticationFailed("User not found.")
         
         return (user, token)
+
+class BlacklistTokenAuthenticationScheme(OpenApiAuthenticationExtension):
+    target_class = BlacklistTokenAuthentication
+    name = 'BlacklistToken'
+    
+    def get_security_definition(self, auto_schema):
+        return {
+            'type': 'http',
+            'scheme': 'bearer',
+            'bearerFormat': 'JWT'
+        }
