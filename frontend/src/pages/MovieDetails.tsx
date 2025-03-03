@@ -23,7 +23,19 @@ const MovieDetails = () => {
     const navigate = useNavigate();
 
     const openTrailerModal = (url: string) => {
-        setTrailerUrl(url);
+        if (url.includes("watch?v=")) {
+            const videoId = url.split("watch?v=")[1];
+            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            setTrailerUrl(embedUrl);
+        }
+        else if (url.includes("youtu.be/")) {
+            const videoId = url.split("youtu.be/")[1];
+            const embedUrl = `https://www.youtube.com/embed/${videoId}`;
+            setTrailerUrl(embedUrl);
+        }
+        else {
+            setTrailerUrl(url);
+        }
         setIsModalOpen(true);
     };
 
